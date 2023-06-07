@@ -1,5 +1,6 @@
 *.zip
 *.png
+padchest*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

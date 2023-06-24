@@ -107,6 +107,6 @@ if __name__ == '__main__':
     df['f1_lower'] = f1s_lower
     df['f1_upper'] = f1s_upper
 
-    df.to_hdf('bootstrap_all.h5', key='df', index=False)
+    df.to_csv('bootstrap_all.csv', index=False)
 
 

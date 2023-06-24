@@ -2,6 +2,7 @@
 *.png
 padchest*/
 checkpoints/
+labels/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -73,6 +73,8 @@ class ClsModel(pl.LightningModule):
             num_cls = 1
         elif conf.manipulate_mode in [ManipulateMode.padchest_train]:
             num_cls = 193
+        elif conf.manipulate_mode in [ManipulateMode.uka_chest]:
+            num_cls = 8
         else:
             raise NotImplementedError()
 
@@ -150,6 +152,11 @@ class ClsModel(pl.LightningModule):
                             self.conf.img_size,
                             do_augment=True) 
         
+        elif self.conf.manipulate_mode == ManipulateMode.uka_chest:
+            return UkachestAttrDataset(data_paths['uka_chest'],
+                            self.conf.img_size,
+                            do_augment=True) 
+
         elif self.conf.manipulate_mode == ManipulateMode.d2c_fewshot:
             return CelebD2CAttrFewshotDataset(
                 cls_name=self.conf.manipulate_cls,

@@ -60,6 +60,7 @@ class ManipulateMode(Enum):
     mimic_all = 'mimic_all'
     mimic_finetune = 'mimic_finetune'
     padchest_train = 'padchest_train'
+    uka_chest = 'uka_chest',
     # celeba with D2C's crop
     d2c_fewshot = 'd2cfewshot'
     d2c_fewshot_allneg = 'd2cfewshotallneg'
@@ -75,6 +76,7 @@ class ManipulateMode(Enum):
             ManipulateMode.mimic_all,
             ManipulateMode.mimic_finetune,
             ManipulateMode.padchest_train,
+            ManipulateMode.uka_chest,
         ]
 
     def is_single_class(self):

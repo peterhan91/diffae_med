@@ -348,6 +348,42 @@ class padchest_lmdb(Dataset):
         return {'img': img, 'index': index}
 
 
+class ukachest_lmdb(Dataset):
+    def __init__(self,
+                 path='/data/home/than/LMDB/uka_icu/256',
+                 image_size=256,
+                 original_resolution=256,
+                 split=None,
+                 as_tensor: bool = True,
+                 do_augment: bool = True,
+                 do_normalize: bool = True,
+                 **kwargs):
+        self.original_resolution = original_resolution
+        self.data = BaseLMDB(path, original_resolution, zfill=5)
+        self.length = len(self.data)
+
+        transform = [
+            transforms.Resize(image_size),
+        ]
+        if do_augment:
+            transform.append(transforms.RandomHorizontalFlip())
+        if as_tensor:
+            transform.append(transforms.ToTensor())
+        if do_normalize:
+            transform.append(
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+        self.transform = transforms.Compose(transform)
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, index):
+        assert index < self.length
+        img = self.data[index]
+        if self.transform is not None:
+            img = self.transform(img)
+        return {'img': img, 'index': index}
+
 
 class Crop:
     def __init__(self, x1, x2, y1, y2):
@@ -1104,6 +1140,61 @@ class PadchestAttrDataset(Dataset):
         
         return {'img': img, 'index': index, 'labels': torch.tensor(labels)}
     
+
+class UkachestAttrDataset(Dataset):
+    def __init__(self,
+                 path,
+                 image_size=None,
+                 attr_path='labels/uka_chest.csv',
+                 original_resolution=256,
+                 do_augment: bool = False,
+                 do_transform: bool = True,
+                 do_normalize: bool = True):
+        super().__init__()
+        self.image_size = image_size
+        self.data = BaseLMDB(path, original_resolution, zfill=5)
+
+        transform = [
+            transforms.Resize(image_size),
+            transforms.CenterCrop(image_size),
+        ]
+        if do_augment:
+            transform.append(transforms.RandomHorizontalFlip())
+        if do_transform:
+            transform.append(transforms.ToTensor())
+        if do_normalize:
+            transform.append(
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+        self.transform = transforms.Compose(transform)
+
+        self.df = pd.read_csv(attr_path)
+        self.df = self.df[self.df['split'] == 'train']
+        self.df = self.df.sort_values(by=['Anforderungsnummer'])
+        self.df['names'] = [str(i) + '.jpg' for i in list(range(len(self.df)))]
+        self.PRED_LABEL = self.df.columns[1:-2]
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, index):
+        row = self.df.iloc[index]
+        img_name = row['names']
+        img_idx, ext = img_name.split('.')
+        img = self.data[img_idx]
+
+        labels = np.zeros(len(self.PRED_LABEL), dtype=int)
+        for i in range(0, len(self.PRED_LABEL)):
+            if(self.df[self.PRED_LABEL[i].strip()].iloc[index].astype('int') > 0):
+                labels[i] = self.df[self.PRED_LABEL[i].strip()].iloc[index].astype('int')
+        
+        labels = np.where(labels > 0.1, 1, 0)
+        
+        if self.transform is not None:
+            img = self.transform(img)
+        
+        return {'img': img, 'index': index, 'labels': torch.tensor(labels)}
+
+
 
 class CelebHQAttrDataset(Dataset):
     id_to_cls = [

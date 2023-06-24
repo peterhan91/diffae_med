@@ -212,6 +212,28 @@ def padchest256_autoenc():
     return conf
 
 
+def ukachest256_autoenc():
+    conf = ffhq128_autoenc_base()
+    conf.data_name = 'uka_chest'
+    conf.scale_up_gpus(1)
+    conf.num_workers = 8
+    conf.img_size = 256
+    conf.net_ch = 128
+    conf.net_ch_mult = (1, 1, 2, 2, 4, 4)
+    conf.net_enc_channel_mult = (1, 1, 2, 2, 4, 4, 4)
+    conf.eval_every_samples = 100_000_000
+    conf.eval_ema_every_samples = 100_000_000
+    conf.total_samples = 20_000_000
+    conf.batch_size = 16
+    # conf.eval_path = 'checkpoints/padchest256_autoenc/last.ckpt'
+    conf.pretrain = PretrainConfig(
+        name='90M',
+        path=f'checkpoints/{padchest256_autoenc().name}/last.ckpt')
+    conf.make_model_conf()
+    conf.name = 'ukachest256_autoenc'
+    return conf
+
+
 def ffhq256_autoenc_eco():
     conf = ffhq128_autoenc_base()
     conf.img_size = 256

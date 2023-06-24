@@ -28,6 +28,8 @@ data_paths = {
     '/media/tianyu.han/mri-scratch/DeepLearning/padchest/lmdb_train/256',
     'padchest_train':
     '/media/tianyu.han/mri-scratch/DeepLearning/padchest/lmdb_test_train/256',
+    'uka_chest':
+    '/data/home/than/LMDB/uka_icu/256',
     'ffhqlmdb256':
     os.path.expanduser('datasets/ffhq256.lmdb'),
     # used for training a classifier
@@ -327,7 +329,10 @@ class TrainConfig(BaseConfig):
             return padchest_lmdb(path=path or self.data_path,
                             image_size=self.img_size,
                             **kwargs) 
-        
+        elif self.data_name == 'uka_chest':
+            return ukachest_lmdb(path=path or self.data_path,
+                            image_size=self.img_size,
+                            **kwargs) 
         else:
             raise NotImplementedError()
 

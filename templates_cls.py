@@ -113,6 +113,24 @@ def padchest256_autoenc_cls():
     return conf
 
 
+def ukachest256_autoenc_cls():
+    conf = ukachest256_autoenc()
+    conf.train_mode = TrainMode.manipulate
+    conf.manipulate_mode = ManipulateMode.uka_chest
+    conf.manipulate_znormalize = True
+    conf.latent_infer_path = f'checkpoints/{ukachest256_autoenc().name}/latent.pkl'  # we train on padchest dataset, not uka
+    conf.batch_size = 16
+    conf.lr = 1e-3
+    conf.total_samples = 600_000
+    # use the pretraining trick instead of contiuning trick
+    conf.pretrain = PretrainConfig(
+        '90M',
+        f'checkpoints/{padchest256_autoenc().name}/last.ckpt',
+    )
+    conf.name = 'ukachest256_autoenc_cls'
+    return conf
+
+
 def mimic256_autoenc_cls():
     conf = mimic256_autoenc()
     conf.train_mode = TrainMode.manipulate

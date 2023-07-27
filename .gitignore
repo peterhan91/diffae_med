@@ -3,6 +3,9 @@
 padchest*/
 checkpoints/
 labels/
+analysis/
+evals/
+*.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

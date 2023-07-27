@@ -8,7 +8,6 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 import torch.nn.functional as F
-from torchvision.datasets import CIFAR10, LSUNClass
 import torch
 import pandas as pd
 import numpy as np
